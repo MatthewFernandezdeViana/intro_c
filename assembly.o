@@ -1,0 +1,70 @@
+	.file	"introduction_to.c"
+	.section	.rodata
+.LC0:
+	.string	"%d \n"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp ;This sets up where in the memory our program is, it can be ignored for the moment
+	movl	$1, -12(%rbp) ;Here the value of 1 is being stored at a particular memory location, this is what the variable a actually is.
+	movl	$2, -8(%rbp) ;2 is being stored at another memory location created as b
+	movl	-12(%rbp), %edx ;Here we take the value at location assigned to a and move it to a CPU register
+	movl	-8(%rbp), %eax ;Likewise for the memory location assigned to b
+	addl	%edx, %eax ;We have both addition enabled registers loaded with the values taken from a and b
+	movl	%eax, -4(%rbp) ;The output of the addition is sent to a new memory location representing c
+	movl	$6, -4(%rbp) ;Now 6 is written to the location for c in memory
+	addl	$1, -4(%rbp) ;Since we have a simple addition the compiler lets us do a single instruction
+	movl	-4(%rbp), %eax ;move what it at location c to a register
+	imull	-8(%rbp), %eax ;multiply what is in the register by the number from location b
+	movl	%eax, -4(%rbp) ;Take the result from the register and store it at c
+	movl	-12(%rbp), %edx ;The computer gets our variables c and a ready to work on for the function call
+	movl	-4(%rbp), %eax ;We will leave it here, feel free to look into assembly more.
+	movl	%edx, %esi
+	movl	%eax, %edi
+	call	function_1_you_add_that_is_your_purpose
+	movl	%eax, -4(%rbp)
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	function_1_you_add_that_is_your_purpose
+	.type	function_1_you_add_that_is_your_purpose, @function
+function_1_you_add_that_is_your_purpose:
+.LFB1:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	%edi, -20(%rbp)
+	movl	%esi, -24(%rbp)
+	movl	-20(%rbp), %edx
+	movl	-24(%rbp), %eax
+	addl	%edx, %eax
+	movl	%eax, -4(%rbp)
+	movl	-4(%rbp), %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE1:
+	.size	function_1_you_add_that_is_your_purpose, .-function_1_you_add_that_is_your_purpose
+	.ident	"GCC: (Ubuntu 6.5.0-2ubuntu1~18.04) 6.5.0 20181026"
+	.section	.note.GNU-stack,"",@progbits
